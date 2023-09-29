@@ -1,13 +1,18 @@
 package com.z1dai.mymaps
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.z1dai.mymaps.models.UserMap
 import com.z1dai.mymaps.models.Place
 
 private lateinit var rvMaps: RecyclerView
+const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
+const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
+private const val TAG = "MainActivity"
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,7 +24,17 @@ class MainActivity : AppCompatActivity() {
         //set layout manager
         rvMaps.layoutManager = LinearLayoutManager(this)
         //set adapter
-        rvMaps.adapter = MapsAdapter(this, userMaps)
+        rvMaps.adapter = MapsAdapter(this, userMaps, object: MapsAdapter.OnClickListener{
+            override fun onItemClick(position: Int) {
+                Log.i(TAG, "onItemClick $position.")
+                // When user taps on item inb RV, navigate to new activity
+                val intent = Intent(this@MainActivity, DisplayMapActivity::class.java)
+                intent.putExtra(EXTRA_USER_MAP, userMaps[position])
+                startActivity(intent)
+                //overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+            }
+        })
+
     }
     private fun generateSampleData(): List<UserMap> {
         return listOf(
