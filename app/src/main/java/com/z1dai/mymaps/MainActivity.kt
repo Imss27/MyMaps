@@ -1,11 +1,13 @@
 package com.z1dai.mymaps
 
+import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.z1dai.mymaps.models.UserMap
 import com.z1dai.mymaps.models.Place
 
@@ -13,14 +15,19 @@ private lateinit var rvMaps: RecyclerView
 const val EXTRA_USER_MAP = "EXTRA_USER_MAP"
 const val EXTRA_MAP_TITLE = "EXTRA_MAP_TITLE"
 private const val TAG = "MainActivity"
-class MainActivity : AppCompatActivity() {
+const val REQUEST_CODE = 27
+private lateinit var fabCreateMap: FloatingActionButton
 
+class MainActivity : AppCompatActivity() {
+    private lateinit var userMaps: MutableList<UserMap>
+    private lateinit var mapAdapter: MapsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         rvMaps = findViewById(/* id = */ R.id.rvMaps)
-
+        fabCreateMap = findViewById(R.id.fabCreateMap)
         val userMaps = generateSampleData()
+
         //set layout manager
         rvMaps.layoutManager = LinearLayoutManager(this)
         //set adapter
@@ -35,7 +42,27 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
+        fabCreateMap.setOnClickListener {
+            Log.i(TAG, "Tap on FAB.")
+            //showAlertDialog()
+            val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
+            intent.putExtra(EXTRA_MAP_TITLE, "NEW MAP TITLE")
+            startActivityForResult(intent, REQUEST_CODE)
+        }
+
     }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            // get new map data from the data
+            val userMap = data?.getSerializableExtra(EXTRA_USER_MAP) as UserMap
+            Log.i(TAG, "onActivityResult with new map title ${userMap.title}")
+            userMaps.add(userMap)
+            mapAdapter.notifyItemInserted(userMaps.size - 1)
+            //serializeUserMaps(this, userMaps)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     private fun generateSampleData(): List<UserMap> {
         return listOf(
             UserMap(
