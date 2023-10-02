@@ -1,12 +1,19 @@
 package com.z1dai.mymaps
 
 import android.app.Activity
+import android.content.DialogInterface
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.z1dai.mymaps.models.UserMap
 import com.z1dai.mymaps.models.Place
@@ -26,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         rvMaps = findViewById(/* id = */ R.id.rvMaps)
         fabCreateMap = findViewById(R.id.fabCreateMap)
-        val userMaps = generateSampleData()
+        val userMaps = generateSampleData().toMutableList()
 
         //set layout manager
         rvMaps.layoutManager = LinearLayoutManager(this)
@@ -44,10 +51,8 @@ class MainActivity : AppCompatActivity() {
 
         fabCreateMap.setOnClickListener {
             Log.i(TAG, "Tap on FAB.")
-            //showAlertDialog()
-            val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
-            intent.putExtra(EXTRA_MAP_TITLE, "NEW MAP TITLE")
-            startActivityForResult(intent, REQUEST_CODE)
+            showAlertDialog()
+
         }
 
     }
@@ -62,7 +67,29 @@ class MainActivity : AppCompatActivity() {
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+    private fun showAlertDialog() {
+        val mapFormView = LayoutInflater.from(this).inflate(R.layout.dialog_create_map, null)
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Map Title")
+            .setView(mapFormView)
+            .setNegativeButton("Cancel", null)
+            .setPositiveButton("OK", null)
+            .show()
 
+        dialog.getButton(DialogInterface.BUTTON_POSITIVE).setOnClickListener {
+            val title = mapFormView.findViewById<EditText>(R.id.etMapTitle).text.toString()
+            if (title.trim().isEmpty()) {
+                Toast.makeText(this, "Map must have non-empty title!", Toast.LENGTH_LONG).show();
+                return@setOnClickListener
+            }
+
+            // Navigate to create map activity
+            val intent = Intent(this@MainActivity, CreateMapActivity::class.java)
+            intent.putExtra(EXTRA_MAP_TITLE, title)
+            startActivityForResult(intent, REQUEST_CODE)
+            dialog.dismiss()
+        }
+    }
     private fun generateSampleData(): List<UserMap> {
         return listOf(
             UserMap(
