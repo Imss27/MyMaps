@@ -5,3 +5,5 @@ This is an Android App with following features:
 - Allow the user to create a new map
 
 RecyclerView.
+
+![image]https://github.com/Imss27/MyMaps/blob/main/recording.gif
