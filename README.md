@@ -6,4 +6,4 @@ This is an Android App with following features:
 
 RecyclerView.
 
-![image]https://github.com/Imss27/MyMaps/blob/main/recording.gif
+![image](https://github.com/Imss27/MyMaps/blob/main/recording.gif)
