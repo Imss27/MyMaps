@@ -58,8 +58,6 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Check that 'item' is the save menu option
-
         if (item.itemId == R.id.miSave) {
             Log.i(TAG, "Tapped on save!")
             if (markers.isEmpty()) {
@@ -67,10 +65,8 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
                 return true
             }
             // Generate user map.
-            val places = markers.map { marker -> marker.title?.let { marker.snippet?.let { it1 ->
-                Place(it,
-                    it1, marker.position.latitude, marker.position.longitude)
-            } } }
+            val places = markers.map { marker -> Place(marker.title!!,
+                marker.snippet!!, marker.position.latitude, marker.position.longitude) }
             val userMap = intent.getStringExtra(EXTRA_MAP_TITLE)?.let { UserMap(it, places) }
             val data = Intent()
             data.putExtra(EXTRA_USER_MAP, userMap)
@@ -78,8 +74,6 @@ class CreateMapActivity : AppCompatActivity(), OnMapReadyCallback {
             finish()
             return true
         }
-
-
         return super.onOptionsItemSelected(item)
     }
 
